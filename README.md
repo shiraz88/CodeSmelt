@@ -1,15 +1,7 @@
-# CodeSmelt
-
-A command-line tool for melting down git project source code into a single file for easy analysis with LLMs.
-
-**Author:** Shiraz Akmal
-
-2. Ensure you have Python 3.11 or later installed:
-   ```bash
-   python --version
+python --version
    ```
 
-3. Install the required dependency:
+2. Install the required dependency:
    ```bash
    pip install gitignore-parser
    ```
@@ -31,6 +23,74 @@ python codesmelt.py /path/to/project -o output.txt --debug
 - `project_path`: Path to the Git project directory (required)
 - `-o, --output`: Output file path (default: concatenated_source.txt)
 - `-d, --debug`: Enable debug logging
+
+## Configuration
+
+### Source File Extensions
+The tool includes common source code file extensions by default (defined in `extensions.py`):
+- Web: `.js`, `.ts`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.html`, `.css`, etc.
+- Python: `.py`, `.pyi`, `.pyx`
+- Java/Kotlin: `.java`, `.kt`, `.groovy`
+- C-family: `.c`, `.cpp`, `.h`, `.hpp`
+- And many more...
+
+#### Customizing File Extensions
+You can modify which file extensions are included by editing the `SOURCE_EXTENSIONS` set in `extensions.py`. For example, to include Unity3D script files while excluding other Unity files:
+
+```python
+SOURCE_EXTENSIONS = {
+    # ... existing extensions ...
+
+    # Unity3D specific
+    '.cs',  # C# scripts
+    '.shader', # Custom shaders
+    '.asmdef', # Assembly definitions
+
+    # ... other extensions ...
+}
+```
+
+### Ignore Patterns
+The tool automatically ignores files based on three levels:
+
+1. Built-in patterns (`IGNORE_PATTERNS` in `extensions.py`):
+   - Build outputs (`build/*`, `dist/*`, `*.pyc`, etc.)
+   - Dependencies (`node_modules/*`, `vendor/*`, `venv/*`)
+   - IDE files (`.idea/*`, `.vscode/*`)
+   - Package lock files (`package-lock.json`, `poetry.lock`, etc.)
+   - Binary and media files (`*.pdf`, `*.jpg`, `*.exe`, etc.)
+
+2. Project's `.gitignore` rules (if present)
+3. Directory-specific `.gitignore` rules
+
+#### Customizing Ignore Patterns
+To modify which files are ignored, you can:
+
+1. Edit `IGNORE_PATTERNS` in `extensions.py`:
+```python
+IGNORE_PATTERNS = {
+    # ... existing patterns ...
+
+    # Unity3D specific ignores
+    'Assets/AssetStoreTools/*',
+    'Library/*',
+    'Temp/*',
+    'Logs/*',
+    '*.unity',  # Unity scene files
+    '*.meta',   # Unity meta files
+    '*.prefab', # Unity prefab files
+
+    # ... other patterns ...
+}
+```
+
+2. Use your project's `.gitignore` file for project-specific exclusions
+
+**Note**: Ignore patterns follow the same syntax as `.gitignore` files. The tool processes these rules in order:
+1. Built-in `IGNORE_PATTERNS`
+2. Project's root `.gitignore`
+3. Directory-specific `.gitignore` files
+
 
 ## Tips for Using with LLMs
 
@@ -78,24 +138,6 @@ Directory Structure:
 ================================================================================
 [File contents here]
 ```
-
-## Configuration
-
-### Source File Extensions
-The tool includes common source code file extensions by default (defined in `extensions.py`):
-- Web: `.js`, `.ts`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.html`, `.css`, etc.
-- Python: `.py`, `.pyi`, `.pyx`
-- Java/Kotlin: `.java`, `.kt`, `.groovy`
-- C-family: `.c`, `.cpp`, `.h`, `.hpp`
-- And many more...
-
-### Ignore Patterns
-The tool automatically ignores:
-- Build outputs (`build/*`, `dist/*`, `*.pyc`, etc.)
-- Dependencies (`node_modules/*`, `vendor/*`, `venv/*`)
-- IDE files (`.idea/*`, `.vscode/*`)
-- Package lock files (`package-lock.json`, `poetry.lock`, etc.)
-- Binary and media files (`*.pdf`, `*.jpg`, `*.exe`, etc.)
 
 ## Troubleshooting
 
