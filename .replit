@@ -1,0 +1,51 @@
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Git Concatenator"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "CodeSmelt"
+
+[[workflows.workflow]]
+name = "Git Concatenator"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python git_concatenator.py . -o output.txt --debug"
+
+[[workflows.workflow]]
+name = "CodeSmelt"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python codesmelt.py . -o output.txt --debug"
+
+[deployment]
+run = ["sh", "-c", "python git_concatenator.py . -o output.txt --debug"]

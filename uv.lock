@@ -1,0 +1,19 @@
+version = 1
+requires-python = ">=3.11"
+
+[[package]]
+name = "gitignore-parser"
+version = "0.1.11"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/59/b4fc550b7b07e8951eefbc3208162f509f5d6a381602b66a20a6288b8275/gitignore_parser-0.1.11.tar.gz", hash = "sha256:fa10fde48b44888eeefac096f53bcdad9b87a4ffd7db788558dbdf71ff3bc9db", size = 5284 }
+
+[[package]]
+name = "repl-nix-workspace"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "gitignore-parser" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "gitignore-parser", specifier = ">=0.1.11" }]
