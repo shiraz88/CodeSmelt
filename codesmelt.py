@@ -185,30 +185,42 @@ class CodeSmelt:
 def main():
     parser = argparse.ArgumentParser(
         description="CodeSmelt: Melt down your git project's source code into a single file",
-        usage="%(prog)s [-o OUTPUT] [-d] project_path"
+        usage="%(prog)s project_path [output_file] [-o OUTPUT] [-d]"
     )
+
+    # Add the project path as required positional argument
+    parser.add_argument(
+        "project_path",
+        help="Path to the git project directory"
+    )
+
+    # Add optional positional argument for output file
+    parser.add_argument(
+        "output_file",
+        nargs="?",  # Make it optional
+        help="Output file path (alternative to -o)",
+        default=None
+    )
+
+    # Keep the original -o option for backward compatibility
     parser.add_argument(
         "-o", "--output",
-        default="concatenated_source.txt",
-        help="Output file path (default: concatenated_source.txt)"
+        help="Output file path (default: concatenated_source.txt)",
+        default=None
     )
+
     parser.add_argument(
         "-d", "--debug",
         action="store_true",
         help="Enable debug logging"
     )
-    parser.add_argument(
-        "project_path",
-        help="Path to the git project directory",
-        nargs="?"  # Make it optional in the parser (though we'll check it's provided)
-    )
 
     args = parser.parse_args()
 
-    if not args.project_path:
-        parser.error("project_path is required")
+    # Determine the output file path, prioritizing command line arguments
+    output_file = args.output or args.output_file or "concatenated_source.txt"
 
-    concatenator = CodeSmelt(args.project_path, args.output)
+    concatenator = CodeSmelt(args.project_path, output_file)
     success = concatenator.concatenate(debug=args.debug)
     sys.exit(0 if success else 1)
 
