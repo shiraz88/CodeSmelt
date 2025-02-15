@@ -209,7 +209,7 @@ This project is licensed under the [MIT License](LICENSE). *(Replace with your a
 
 **Shiraz Akmal**
 
-Feel free to reach out if you have any questions or feedback!
+Feel free to reach out (https://x.com/ShirazAkmal) if you have any questions or feedback! 
 
 ---
 
