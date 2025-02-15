@@ -1,3 +1,16 @@
+pip install gitignore-parser
+```
+
+The `gitignore-parser` package provides intelligent `.gitignore` handling, allowing CodeSmelt to:
+- Automatically respect your project's existing `.gitignore` rules
+- Support nested `.gitignore` files in subdirectories
+- Handle complex pattern matching including wildcards and negations
+- Maintain consistency with git's ignore behavior
+
+## Usage
+
+Basic usage:
+```bash
 python codesmelt.py /path/to/project
 ```
 
@@ -34,9 +47,11 @@ SOURCE_EXTENSIONS = {
     # ... existing extensions ...
 
     # Unity3D specific
-    '.cs',  # C# scripts
-    '.shader', # Custom shaders
-    '.asmdef', # Assembly definitions
+    '.cs',       # C# scripts
+    '.shader',   # Custom shaders
+    '.asmdef',   # Assembly definitions
+    '.compute',  # Compute shaders
+    '.cginc',    # Shader includes
 
     # ... other extensions ...
 }
@@ -68,9 +83,12 @@ IGNORE_PATTERNS = {
     'Library/*',
     'Temp/*',
     'Logs/*',
-    '*.unity',  # Unity scene files
-    '*.meta',   # Unity meta files
-    '*.prefab', # Unity prefab files
+    '*.unity',     # Unity scene files
+    '*.meta',      # Unity meta files
+    '*.prefab',    # Unity prefab files
+    '*.fbx',       # 3D model files
+    '*.mat',       # Material files
+    '*.asset',     # Unity serialized files
 
     # ... other patterns ...
 }
@@ -82,7 +100,6 @@ IGNORE_PATTERNS = {
 1. Built-in `IGNORE_PATTERNS`
 2. Project's root `.gitignore`
 3. Directory-specific `.gitignore` files
-
 
 ## Tips for Using with LLMs
 
