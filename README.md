@@ -1,54 +1,4 @@
-# CodeSmelt: Source Code Concatenator
-
-![CodeSmelt Logo](assets/CodeSmeltLogo.jpg)
-
-**CodeSmelt** is a command-line tool that “melts down” your Git project’s source code into a single, well-organized file. It not only concatenates source files but also embeds a tree-like directory structure to help you quickly understand your project’s layout. This is especially useful for code analysis, preparing inputs for language models, or sharing project snapshots.
-
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Basic Usage](#basic-usage)
-  - [Custom Output & Debug Mode](#custom-output--debug-mode)
-- [Configuration](#configuration)
-  - [Source File Extensions](#source-file-extensions)
-  - [Ignore Patterns](#ignore-patterns)
-- [Tips for Using with LLMs](#tips-for-using-with-llms)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
-- [Author](#author)
-
----
-
-## Features
-
-- **Concatenation with Context:** Combines all source files (with supported extensions) into one file while preserving directory hierarchy.
-- **Smart Filtering:** Uses built-in file extension whitelists and ignore patterns. Also honors your project’s `.gitignore` for extra filtering.
-- **Encoding Handling:** Automatically handles file encoding issues (tries UTF-8 first, then falls back to Latin-1).
-- **Debug Logging:** Option to enable debug logging so you can see which files are being included or skipped.
-- **Easy Customization:** Adjust supported file extensions and ignore patterns via the `extensions.py` file.
-
----
-
-## Installation
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/codesmelt.git
-   cd codesmelt
-   ```
-
-2. **Install Dependencies:**
-
-   CodeSmelt requires Python 3. Instead of installing dependencies individually, you can install all required packages using the `requirements.txt` file:
-
-   ```bash
-   pip install -r requirements.txt
+pip install -r requirements.txt
    ```
 
    *(If you use a virtual environment, activate it before installing.)*
@@ -56,7 +6,7 @@
 3. **Ensure File Structure:**
 
    Make sure the following files are in the same directory:
-   
+
    - `codesmelt.py`
    - `extensions.py`
    - `README.md`
@@ -89,11 +39,20 @@ python codesmelt.py /path/to/project
   python codesmelt.py -d -o output.txt /path/to/project
   ```
 
+- **Omit Directory Structure:**
+
+  ```bash
+  python codesmelt.py -n -o output.txt /path/to/project
+  ```
+
 #### Command-line Arguments
 
 - `project_path` (required): Path to your Git project directory.
 - `-o, --output`: Specify the output file path (default: `concatenated_source.txt`).
 - `-d, --debug`: Enable debug logging to get detailed information about file selection.
+- `-n, --no-structure`: Omit the directory structure from the output file.
+- `-e, --no-extensions`: Disable file extension filtering (include all files regardless of extension).
+
 
 ---
 
@@ -168,34 +127,6 @@ IGNORE_PATTERNS = {
 
 2. **Missing Dependencies:**
    - Make sure you have installed all required packages by running:
-     
+
      ```bash
      pip install -r requirements.txt
-     ```
-
-3. **Permission Issues:**
-   - Make sure you have read permissions for the project directory and write permissions for the output file.
-
----
-
-## Contributing
-
-Contributions are welcome! If you have ideas for improvements, bug fixes, or additional features, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-## Author
-
-**Shiraz Akmal**
-
-Feel free to reach out if you have any questions or feedback!
-
----
-
-Happy coding with CodeSmelt!

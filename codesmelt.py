@@ -22,6 +22,8 @@ class CodeSmelt:
         self.output_file = Path(output_file)
         self.gitignore_matcher = self._setup_gitignore()
         self.debug = False
+        self.include_structure = True
+        self.include_extensions = True  # New flag for controlling extension filtering
 
     def _setup_gitignore(self) -> Optional[callable]:
         """Setup gitignore matcher if .gitignore exists"""
@@ -57,8 +59,8 @@ class CodeSmelt:
                     print(f"Debug: Skipping excluded directory: {file_path}")
                 return False
 
-            # Check if file extension is in whitelist
-            if file_path.suffix.lower() not in SOURCE_EXTENSIONS:
+            # Check file extension only if extension filtering is enabled
+            if self.include_extensions and file_path.suffix.lower() not in SOURCE_EXTENSIONS:
                 if self.debug:
                     print(f"Debug: Skipping non-source file: {file_path}")
                 return False
@@ -156,9 +158,10 @@ class CodeSmelt:
 """
                 out.write(header)
 
-                # Write directory structure
-                out.write(self._generate_directory_structure())
-                out.write("\n\n" + "="*80 + "\n\n")
+                # Write directory structure if enabled
+                if self.include_structure:
+                    out.write(self._generate_directory_structure())
+                    out.write("\n\n" + "="*80 + "\n\n")
 
                 # Process all files
                 file_count = 0
@@ -185,7 +188,7 @@ class CodeSmelt:
 def main():
     parser = argparse.ArgumentParser(
         description="CodeSmelt: Melt down your git project's source code into a single file",
-        usage="%(prog)s project_path [output_file] [-o OUTPUT] [-d]"
+        usage="%(prog)s project_path [output_file] [-o OUTPUT] [-d] [-n] [-e]"
     )
 
     # Add the project path as required positional argument
@@ -215,12 +218,26 @@ def main():
         help="Enable debug logging"
     )
 
+    parser.add_argument(
+        "-n", "--no-structure",
+        action="store_true",
+        help="Omit directory structure from output"
+    )
+
+    parser.add_argument(
+        "-e", "--no-extensions",
+        action="store_true",
+        help="Disable file extension filtering"
+    )
+
     args = parser.parse_args()
 
     # Determine the output file path, prioritizing command line arguments
     output_file = args.output or args.output_file or "concatenated_source.txt"
 
     concatenator = CodeSmelt(args.project_path, output_file)
+    concatenator.include_structure = not args.no_structure
+    concatenator.include_extensions = not args.no_extensions
     success = concatenator.concatenate(debug=args.debug)
     sys.exit(0 if success else 1)
 
