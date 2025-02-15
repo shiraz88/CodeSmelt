@@ -1,6 +1,8 @@
-git clone https://github.com/yourusername/codesmelt.git
-   cd codesmelt
-   ```
+# CodeSmelt
+
+A command-line tool for melting down git project source code into a single file for easy analysis with LLMs.
+
+**Author:** Shiraz Akmal
 
 2. Ensure you have Python 3.11 or later installed:
    ```bash
