@@ -1,25 +1,17 @@
-python --version
-   ```
+python codesmelt.py /path/to/project
+```
 
-2. Install the required dependency:
-   ```bash
-   pip install gitignore-parser
-   ```
-
-## Usage
-
-Basic usage:
+Specify custom output file:
 ```bash
-python codesmelt.py /path/to/project -o output.txt
+python codesmelt.py -o output.txt /path/to/project
 ```
 
 With debug logging:
 ```bash
-python codesmelt.py /path/to/project -o output.txt --debug
+python codesmelt.py -d -o output.txt /path/to/project
 ```
 
 ### Command-line Arguments
-
 - `project_path`: Path to the Git project directory (required)
 - `-o, --output`: Output file path (default: concatenated_source.txt)
 - `-d, --debug`: Enable debug logging

@@ -184,11 +184,8 @@ class CodeSmelt:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="CodeSmelt: Melt down your git project's source code into a single file"
-    )
-    parser.add_argument(
-        "project_path",
-        help="Path to the git project directory"
+        description="CodeSmelt: Melt down your git project's source code into a single file",
+        usage="%(prog)s [-o OUTPUT] [-d] project_path"
     )
     parser.add_argument(
         "-o", "--output",
@@ -200,8 +197,16 @@ def main():
         action="store_true",
         help="Enable debug logging"
     )
+    parser.add_argument(
+        "project_path",
+        help="Path to the git project directory",
+        nargs="?"  # Make it optional in the parser (though we'll check it's provided)
+    )
 
     args = parser.parse_args()
+
+    if not args.project_path:
+        parser.error("project_path is required")
 
     concatenator = CodeSmelt(args.project_path, args.output)
     success = concatenator.concatenate(debug=args.debug)
