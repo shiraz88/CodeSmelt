@@ -1,3 +1,6 @@
+![CodeSmelt Logo](assets/CodeSmeltLogo.jpg)
+
+
 python codesmelt.py /path/to/project
 ```
 
