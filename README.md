@@ -1,72 +1,133 @@
+# CodeSmelt: Source Code Concatenator
+
 ![CodeSmelt Logo](assets/CodeSmeltLogo.jpg)
 
+**CodeSmelt** is a command-line tool that “melts down” your Git project’s source code into a single, well-organized file. It not only concatenates source files but also embeds a tree-like directory structure to help you quickly understand your project’s layout. This is especially useful for code analysis, preparing inputs for language models, or sharing project snapshots.
 
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Basic Usage](#basic-usage)
+  - [Custom Output & Debug Mode](#custom-output--debug-mode)
+- [Configuration](#configuration)
+  - [Source File Extensions](#source-file-extensions)
+  - [Ignore Patterns](#ignore-patterns)
+- [Tips for Using with LLMs](#tips-for-using-with-llms)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
+
+---
+
+## Features
+
+- **Concatenation with Context:** Combines all source files (with supported extensions) into one file while preserving directory hierarchy.
+- **Smart Filtering:** Uses built-in file extension whitelists and ignore patterns. Also honors your project’s `.gitignore` for extra filtering.
+- **Encoding Handling:** Automatically handles file encoding issues (tries UTF-8 first, then falls back to Latin-1).
+- **Debug Logging:** Option to enable debug logging so you can see which files are being included or skipped.
+- **Easy Customization:** Adjust supported file extensions and ignore patterns via the `extensions.py` file.
+
+---
+
+## Installation
+
+1. **Clone the Repository:**
+
+   ```bash
+   git clone https://github.com/yourusername/codesmelt.git
+   cd codesmelt
+   ```
+
+2. **Install Dependencies:**
+
+   CodeSmelt requires Python 3. Instead of installing dependencies individually, you can install all required packages using the `requirements.txt` file:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   *(If you use a virtual environment, activate it before installing.)*
+
+3. **Ensure File Structure:**
+
+   Make sure the following files are in the same directory:
+   
+   - `codesmelt.py`
+   - `extensions.py`
+   - `README.md`
+   - `requirements.txt`
+   - `assets/CodeSmeltLogo.jpg` (logo image)
+
+---
+
+## Usage
+
+### Basic Usage
+
+Run CodeSmelt by providing the path to your Git project. For example:
+
+```bash
 python codesmelt.py /path/to/project
 ```
 
-Specify custom output file:
-```bash
-python codesmelt.py -o output.txt /path/to/project
-```
+### Custom Output & Debug Mode
 
-With debug logging:
-```bash
-python codesmelt.py -d -o output.txt /path/to/project
-```
+- **Specify a Custom Output File:**
 
-### Command-line Arguments
-- `project_path`: Path to the Git project directory (required)
-- `-o, --output`: Output file path (default: concatenated_source.txt)
-- `-d, --debug`: Enable debug logging
+  ```bash
+  python codesmelt.py -o output.txt /path/to/project
+  ```
+
+- **Enable Debug Logging:**
+
+  ```bash
+  python codesmelt.py -d -o output.txt /path/to/project
+  ```
+
+#### Command-line Arguments
+
+- `project_path` (required): Path to your Git project directory.
+- `-o, --output`: Specify the output file path (default: `concatenated_source.txt`).
+- `-d, --debug`: Enable debug logging to get detailed information about file selection.
+
+---
 
 ## Configuration
 
+CodeSmelt uses the `extensions.py` file to define:
+
 ### Source File Extensions
-The tool includes common source code file extensions by default (defined in `extensions.py`):
-- Web: `.js`, `.ts`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.html`, `.css`, etc.
-- Python: `.py`, `.pyi`, `.pyx`
-- Java/Kotlin: `.java`, `.kt`, `.groovy`
-- C-family: `.c`, `.cpp`, `.h`, `.hpp`
-- And many more...
 
-#### Customizing File Extensions
-You can modify which file extensions are included by editing the `SOURCE_EXTENSIONS` set in `extensions.py`. For example, to include Unity3D script files while excluding other Unity files:
+The tool automatically includes many common source code file extensions. Examples include:
 
-```python
-SOURCE_EXTENSIONS = {
-    # ... existing extensions ...
+- **Web:** `.js`, `.ts`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.html`, `.css`, etc.
+- **Python:** `.py`, `.pyi`, `.pyx`
+- **Java/Kotlin:** `.java`, `.kt`, `.groovy`
+- **C-family:** `.c`, `.cpp`, `.h`, `.hpp`
+- **Other Languages:** Ruby (`.rb`), PHP (`.php`), Go (`.go`), Rust (`.rs`), Swift (`.swift`), Shell (`.sh`), and more.
 
-    # Unity3D specific
-    '.cs',  # C# scripts
-    '.shader', # Custom shaders
-    '.asmdef', # Assembly definitions
-
-    # ... other extensions ...
-}
-```
+*To add or remove extensions, edit the `SOURCE_EXTENSIONS` set in `extensions.py`.*
 
 ### Ignore Patterns
-The tool automatically ignores files based on three levels:
 
-1. Built-in patterns (`IGNORE_PATTERNS` in `extensions.py`):
-   - Build outputs (`build/*`, `dist/*`, `*.pyc`, etc.)
-   - Dependencies (`node_modules/*`, `vendor/*`, `venv/*`)
-   - IDE files (`.idea/*`, `.vscode/*`)
-   - Package lock files (`package-lock.json`, `poetry.lock`, etc.)
-   - Binary and media files (`*.pdf`, `*.jpg`, `*.exe`, etc.)
+Files and directories are automatically ignored based on three levels:
 
-2. Project's `.gitignore` rules (if present)
-3. Directory-specific `.gitignore` rules
+1. **Built-in Patterns:** Defined in the `IGNORE_PATTERNS` set in `extensions.py` (e.g., build outputs, dependency directories, IDE files, binary/media files).
+2. **Project’s `.gitignore`:** If a `.gitignore` is present at the root of your project, CodeSmelt honors its rules.
+3. **Directory-specific Rules:** Additional `.gitignore` files in subdirectories will also be considered.
 
-#### Customizing Ignore Patterns
-To modify which files are ignored, you can:
+*To customize, modify the `IGNORE_PATTERNS` in `extensions.py`.*
 
-1. Edit `IGNORE_PATTERNS` in `extensions.py`:
+Example of adding Unity3D-specific ignores:
+
 ```python
 IGNORE_PATTERNS = {
     # ... existing patterns ...
-
-    # Unity3D specific ignores
     'Assets/AssetStoreTools/*',
     'Library/*',
     'Temp/*',
@@ -74,75 +135,67 @@ IGNORE_PATTERNS = {
     '*.unity',  # Unity scene files
     '*.meta',   # Unity meta files
     '*.prefab', # Unity prefab files
-
     # ... other patterns ...
 }
 ```
 
-2. Use your project's `.gitignore` file for project-specific exclusions
-
-**Note**: Ignore patterns follow the same syntax as `.gitignore` files. The tool processes these rules in order:
-1. Built-in `IGNORE_PATTERNS`
-2. Project's root `.gitignore`
-3. Directory-specific `.gitignore` files
-
+---
 
 ## Tips for Using with LLMs
 
-1. **Token Management**:
-   - For large projects, consider concatenating only specific directories
-   - Use the debug mode to see which files are included/excluded
-   - Remove unnecessary documentation files if you're close to token limits
+1. **Token Management:**
+   - For very large projects, consider concatenating only specific directories to avoid token limits.
+   - Use debug mode (`-d`) to verify which files are included/excluded.
 
-2. **Effective Prompting**:
-   - Reference files using their relative paths as shown in the directory structure
-   - Use the directory structure to ask about specific components
-   - Refer to file relationships based on the visual structure
+2. **Effective Prompting:**
+   - Reference files using their relative paths as shown in the generated directory structure.
+   - Ask questions about specific sections of the output using the file headers.
 
-3. **Best Practices**:
-   - Review the concatenated output before sending to ensure relevance
-   - For large projects, break down analysis into smaller, focused components
-   - Use the debug mode to verify file selection when customizing
+3. **Best Practices:**
+   - Always review the concatenated output before sending it to an LLM.
+   - For large projects, consider breaking down the analysis into smaller, manageable components.
 
-## Output Format
-
-The generated file includes:
-1. A timestamp and project path header
-2. A visual directory structure of the project
-3. The contents of each source file, clearly separated with headers
-
-Example output:
-```
-# Project Source Code Concatenation
-# Generated on: 2025-02-15 20:53:29
-# Project path: /path/to/project
-
-Directory Structure:
-├── src/
-│   ├── main.py
-│   └── utils.py
-└── README.md
-
-================================================================================
-
-# File: src/main.py
-================================================================================
-[File contents here]
-
-# File: src/utils.py
-================================================================================
-[File contents here]
-```
+---
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **No Files Found**:
-   - Verify the project path is correct
-   - Check if files have supported extensions
-   - Run with --debug to see which files are being filtered
+1. **No Files Found:**
+   - Double-check the project path.
+   - Ensure your project contains files with supported extensions.
+   - Run with `--debug` to see detailed file filtering information.
 
-2. **Missing Dependencies**:
-   ```bash
-   pip install --upgrade gitignore-parser
+2. **Missing Dependencies:**
+   - Make sure you have installed all required packages by running:
+     
+     ```bash
+     pip install -r requirements.txt
+     ```
+
+3. **Permission Issues:**
+   - Make sure you have read permissions for the project directory and write permissions for the output file.
+
+---
+
+## Contributing
+
+Contributions are welcome! If you have ideas for improvements, bug fixes, or additional features, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## Author
+
+**Shiraz Akmal**
+
+Feel free to reach out if you have any questions or feedback!
+
+---
+
+Happy coding with CodeSmelt!
