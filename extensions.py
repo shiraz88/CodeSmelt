@@ -1,5 +1,8 @@
 """
 Source code file extension configurations
+
+Author: Shiraz Akmal & AI
+
 """
 
 # Common source code file extensions

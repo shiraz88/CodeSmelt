@@ -19,6 +19,14 @@ args = "Git Concatenator"
 task = "workflow.run"
 args = "CodeSmelt"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "CodeSmelt Test"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "CodeSmelt Test Custom Model"
+
 [[workflows.workflow]]
 name = "Git Concatenator"
 author = "agent"
@@ -46,6 +54,34 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python codesmelt.py . -o output.txt --debug"
+
+[[workflows.workflow]]
+name = "CodeSmelt Test"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python codesmelt.py . -o output.txt --summary --debug"
+
+[[workflows.workflow]]
+name = "CodeSmelt Test Custom Model"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python codesmelt.py . -o output.txt --summary --model gpt-4 --debug"
 
 [deployment]
 run = ["sh", "-c", "python git_concatenator.py . -o output.txt --debug"]
