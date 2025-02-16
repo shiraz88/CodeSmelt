@@ -1,46 +1,4 @@
-# CodeSmelt: Source Code Concatenator
-
-![CodeSmelt Logo](assets/CodeSmeltLogo.jpg)
-
-**CodeSmelt** is a command-line tool that “melts down” your Git project’s source code into a single, well-organized file. It not only concatenates source files but also embeds a tree-like directory structure (unless omitted) to help you quickly understand your project’s layout. This is especially useful for code analysis, preparing inputs for language models, or sharing project snapshots.
-
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Basic Usage](#basic-usage)
-  - [Custom Output & Debug Mode](#custom-output--debug-mode)
-- [Configuration](#configuration)
-  - [Source File Extensions](#source-file-extensions)
-  - [Ignore Patterns](#ignore-patterns)
-- [Tips for Using with LLMs](#tips-for-using-with-llms)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
-- [Author](#author)
-
----
-
-## Features
-
-- **Concatenation with Context:** Combines all source files (with supported extensions by default) into one file while preserving directory hierarchy.
-- **Smart Filtering:** Uses built-in file extension whitelists and ignore patterns. Also honors your project’s `.gitignore` for extra filtering.
-- **Encoding Handling:** Automatically handles file encoding issues (tries UTF-8 first, then falls back to Latin-1).
-- **Debug Logging:** Option to enable debug logging so you can see which files are being included or skipped.
-- **Customizable Output:** Optionally omit the directory structure and disable file extension filtering via command-line flags.
-- **Easy Customization:** Adjust supported file extensions and ignore patterns via the `extensions.py` file.
-
----
-
-## Installation
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/codesmelt.git
+git clone https://github.com/yourusername/codesmelt.git
    cd codesmelt
    ```
 
@@ -57,7 +15,7 @@
 3. **Ensure File Structure:**
 
    Make sure the following files are in the same directory:
-   
+
    - `codesmelt.py`
    - `extensions.py`
    - `README.md`
@@ -76,7 +34,7 @@ Run CodeSmelt by providing the path to your Git project. For example:
 python codesmelt.py /path/to/project
 ```
 
-### Custom Output, Debug Mode, and New Options
+### Custom Output & Debug Mode
 
 - **Specify a Custom Output File:**
 
@@ -102,6 +60,34 @@ python codesmelt.py /path/to/project
   python codesmelt.py -e /path/to/project
   ```
 
+### AI Summary Generation
+
+- **Generate Basic Documentation Summary:**
+
+  Uses the default AI model to generate documentation:
+  ```bash
+  python codesmelt.py -s /path/to/project
+  ```
+
+- **Use Custom AI Model:**
+
+  Choose specific models for summary generation:
+  ```bash
+  # Using OpenAI models
+  python codesmelt.py -s -m gpt-4 /path/to/project
+  python codesmelt.py -s -m gpt-3.5-turbo /path/to/project
+
+  # Using xAI models
+  python codesmelt.py -s -m grok-2-1212 /path/to/project
+  python codesmelt.py -s -m grok-2-vision-1212 /path/to/project
+  ```
+
+  Note: Each model has different capabilities and token limits:
+  - OpenAI GPT-4: 8K tokens
+  - OpenAI GPT-3.5: 4K tokens
+  - xAI Grok-2: 130K tokens
+  - xAI Grok-2-Vision: 8K tokens
+
 #### Command-line Arguments
 
 - `project_path` (required): Path to your Git project directory.
@@ -109,6 +95,8 @@ python codesmelt.py /path/to/project
 - `-d, --debug`: Enable debug logging to get detailed information about file selection.
 - `-n, --no-structure`: Omit the directory structure from the output file.
 - `-e, --no-extensions`: Disable file extension filtering (include all files regardless of extension).
+- `-s, --summary`: Generate AI documentation summary (requires OpenAI or xAI API key).
+- `-m, --model`: Specify custom AI model for summary generation (e.g., 'gpt-4', 'gpt-3.5-turbo' for OpenAI or 'grok-2-1212', 'grok-2-vision-1212' for xAI).
 
 ---
 
@@ -133,26 +121,10 @@ The tool automatically includes many common source code file extensions. Example
 Files and directories are automatically ignored based on three levels:
 
 1. **Built-in Patterns:** Defined in the `IGNORE_PATTERNS` set in `extensions.py` (e.g., build outputs, dependency directories, IDE files, binary/media files).
-2. **Project’s `.gitignore`:** If a `.gitignore` is present at the root of your project, CodeSmelt honors its rules.
+2. **Project's `.gitignore`:** If a `.gitignore` is present at the root of your project, CodeSmelt honors its rules.
 3. **Directory-specific Rules:** Additional `.gitignore` files in subdirectories will also be considered.
 
 *To customize, modify the `IGNORE_PATTERNS` in `extensions.py`.*
-
-Example of adding Unity3D-specific ignores:
-
-```python
-IGNORE_PATTERNS = {
-    # ... existing patterns ...
-    'Assets/AssetStoreTools/*',
-    'Library/*',
-    'Temp/*',
-    'Logs/*',
-    '*.unity',  # Unity scene files
-    '*.meta',   # Unity meta files
-    '*.prefab', # Unity prefab files
-    # ... other patterns ...
-}
-```
 
 ---
 
@@ -161,6 +133,7 @@ IGNORE_PATTERNS = {
 1. **Token Management:**
    - For very large projects, consider concatenating only specific directories to avoid token limits.
    - Use debug mode (`-d`) to verify which files are included/excluded.
+   - Choose appropriate AI models based on your project size (xAI models support larger contexts).
 
 2. **Effective Prompting:**
    - Reference files using their relative paths as shown in the generated directory structure.
@@ -183,34 +156,6 @@ IGNORE_PATTERNS = {
 
 2. **Missing Dependencies:**
    - Make sure you have installed all required packages by running:
-     
+
      ```bash
      pip install -r requirements.txt
-     ```
-
-3. **Permission Issues:**
-   - Make sure you have read permissions for the project directory and write permissions for the output file.
-
----
-
-## Contributing
-
-Contributions are welcome! If you have ideas for improvements, bug fixes, or additional features, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-## Author
-
-**Shiraz Akmal**
-
-Feel free to reach out (https://x.com/ShirazAkmal) if you have any questions or feedback! 
-
----
-
-Happy coding with CodeSmelt!

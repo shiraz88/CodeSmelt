@@ -1,6 +1,6 @@
 
 # Project Source Code Concatenation
-# Generated on: 2025-02-16 02:31:37
+# Generated on: 2025-02-16 02:41:35
 # Project path: /home/runner/workspace
 
 Directory Structure:
@@ -41,227 +41,6 @@ openai
 openai
 openai
 
-# File: README.md
-================================================================================
-
-# CodeSmelt: Source Code Concatenator
-
-![CodeSmelt Logo](assets/CodeSmeltLogo.jpg)
-
-**CodeSmelt** is a command-line tool that “melts down” your Git project’s source code into a single, well-organized file. It not only concatenates source files but also embeds a tree-like directory structure (unless omitted) to help you quickly understand your project’s layout. This is especially useful for code analysis, preparing inputs for language models, or sharing project snapshots.
-
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Basic Usage](#basic-usage)
-  - [Custom Output & Debug Mode](#custom-output--debug-mode)
-- [Configuration](#configuration)
-  - [Source File Extensions](#source-file-extensions)
-  - [Ignore Patterns](#ignore-patterns)
-- [Tips for Using with LLMs](#tips-for-using-with-llms)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
-- [Author](#author)
-
----
-
-## Features
-
-- **Concatenation with Context:** Combines all source files (with supported extensions by default) into one file while preserving directory hierarchy.
-- **Smart Filtering:** Uses built-in file extension whitelists and ignore patterns. Also honors your project’s `.gitignore` for extra filtering.
-- **Encoding Handling:** Automatically handles file encoding issues (tries UTF-8 first, then falls back to Latin-1).
-- **Debug Logging:** Option to enable debug logging so you can see which files are being included or skipped.
-- **Customizable Output:** Optionally omit the directory structure and disable file extension filtering via command-line flags.
-- **Easy Customization:** Adjust supported file extensions and ignore patterns via the `extensions.py` file.
-
----
-
-## Installation
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/codesmelt.git
-   cd codesmelt
-   ```
-
-2. **Install Dependencies:**
-
-   CodeSmelt requires Python 3. Install all required packages using the `requirements.txt` file:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-   *(If you use a virtual environment, activate it before installing.)*
-
-3. **Ensure File Structure:**
-
-   Make sure the following files are in the same directory:
-   
-   - `codesmelt.py`
-   - `extensions.py`
-   - `README.md`
-   - `requirements.txt`
-   - `assets/CodeSmeltLogo.jpg` (logo image)
-
----
-
-## Usage
-
-### Basic Usage
-
-Run CodeSmelt by providing the path to your Git project. For example:
-
-```bash
-python codesmelt.py /path/to/project
-```
-
-### Custom Output, Debug Mode, and New Options
-
-- **Specify a Custom Output File:**
-
-  ```bash
-  python codesmelt.py -o output.txt /path/to/project
-  ```
-
-- **Enable Debug Logging:**
-
-  ```bash
-  python codesmelt.py -d -o output.txt /path/to/project
-  ```
-
-- **Omit the Directory Structure from the Output:**
-
-  ```bash
-  python codesmelt.py -n /path/to/project
-  ```
-
-- **Disable File Extension Filtering (Include All Files):**
-
-  ```bash
-  python codesmelt.py -e /path/to/project
-  ```
-
-#### Command-line Arguments
-
-- `project_path` (required): Path to your Git project directory.
-- `-o, --output`: Specify the output file path (default: `concatenated_source.txt`).
-- `-d, --debug`: Enable debug logging to get detailed information about file selection.
-- `-n, --no-structure`: Omit the directory structure from the output file.
-- `-e, --no-extensions`: Disable file extension filtering (include all files regardless of extension).
-
----
-
-## Configuration
-
-CodeSmelt uses the `extensions.py` file to define:
-
-### Source File Extensions
-
-The tool automatically includes many common source code file extensions. Examples include:
-
-- **Web:** `.js`, `.ts`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.html`, `.css`, etc.
-- **Python:** `.py`, `.pyi`, `.pyx`
-- **Java/Kotlin:** `.java`, `.kt`, `.groovy`
-- **C-family:** `.c`, `.cpp`, `.h`, `.hpp`
-- **Other Languages:** Ruby (`.rb`), PHP (`.php`), Go (`.go`), Rust (`.rs`), Swift (`.swift`), Shell (`.sh`), and more.
-
-*To add or remove extensions, edit the `SOURCE_EXTENSIONS` set in `extensions.py`.*
-
-### Ignore Patterns
-
-Files and directories are automatically ignored based on three levels:
-
-1. **Built-in Patterns:** Defined in the `IGNORE_PATTERNS` set in `extensions.py` (e.g., build outputs, dependency directories, IDE files, binary/media files).
-2. **Project’s `.gitignore`:** If a `.gitignore` is present at the root of your project, CodeSmelt honors its rules.
-3. **Directory-specific Rules:** Additional `.gitignore` files in subdirectories will also be considered.
-
-*To customize, modify the `IGNORE_PATTERNS` in `extensions.py`.*
-
-Example of adding Unity3D-specific ignores:
-
-```python
-IGNORE_PATTERNS = {
-    # ... existing patterns ...
-    'Assets/AssetStoreTools/*',
-    'Library/*',
-    'Temp/*',
-    'Logs/*',
-    '*.unity',  # Unity scene files
-    '*.meta',   # Unity meta files
-    '*.prefab', # Unity prefab files
-    # ... other patterns ...
-}
-```
-
----
-
-## Tips for Using with LLMs
-
-1. **Token Management:**
-   - For very large projects, consider concatenating only specific directories to avoid token limits.
-   - Use debug mode (`-d`) to verify which files are included/excluded.
-
-2. **Effective Prompting:**
-   - Reference files using their relative paths as shown in the generated directory structure.
-   - Ask questions about specific sections of the output using the file headers.
-
-3. **Best Practices:**
-   - Always review the concatenated output before sending it to an LLM.
-   - For large projects, consider breaking down the analysis into smaller, manageable components.
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-1. **No Files Found:**
-   - Double-check the project path.
-   - Ensure your project contains files with supported extensions (unless using `-e` to disable filtering).
-   - Run with `--debug` to see detailed file filtering information.
-
-2. **Missing Dependencies:**
-   - Make sure you have installed all required packages by running:
-     
-     ```bash
-     pip install -r requirements.txt
-     ```
-
-3. **Permission Issues:**
-   - Make sure you have read permissions for the project directory and write permissions for the output file.
-
----
-
-## Contributing
-
-Contributions are welcome! If you have ideas for improvements, bug fixes, or additional features, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-## Author
-
-**Shiraz Akmal**
-
-Feel free to reach out (https://x.com/ShirazAkmal) if you have any questions or feedback! 
-
----
-
-Happy coding with CodeSmelt!
-
-
 # File: output.txt
 ================================================================================
 
@@ -270,14 +49,7 @@ Happy coding with CodeSmelt!
 # File: output.summary.md
 ================================================================================
 
-```markdown
-# CodeSmelt: Source Code Concatenator
-
-![CodeSmelt Logo](assets/CodeSmeltLogo.jpg)
-
-**CodeSmelt** is a command-line tool designed to simplify the analysis and sharing of Git projects by concatenating source code files into a single file. This tool preserves the directory structure within the output, providing a comprehensive view of the project layout. It is particularly useful for code analysis, input preparation for language models, and sharing project snapshots.
-
----
+# CodeSmelt README
 
 ## Table of Contents
 
@@ -285,24 +57,20 @@ Happy coding with CodeSmelt!
 - [Key Features](#key-features)
 - [Core Classes](#core-classes)
 - [Notable Algorithms and Patterns](#notable-algorithms-and-patterns)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Tips for Using with LLMs](#tips-for-using-with-llms)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
-- [Author](#author)
+- [Dependencies and Requirements](#dependencies-and-requirements)
 
 ---
 
 ## Project Structure
+
+The project structure is organized as follows:
 
 ```plaintext
 ├── README.md
 ├── ai_integration.py
 ├── codesmelt.py
 ├── extensions.py
+├── output.summary.md
 ├── output.txt
 ├── pyproject.toml
 ├── requirements.txt
@@ -312,159 +80,87 @@ Happy coding with CodeSmelt!
 
 ### Description of Key Files
 
-- **codesmelt.py**: Main executable script for concatenating source code files.
-- **extensions.py**: Contains configuration for file extensions and ignore patterns.
-- **requirements.txt**: Lists required dependencies.
-- **pyproject.toml**: Project metadata and dependencies declaration.
-- **assets/**: Directory containing project assets like the logo.
+- **README.md**: Contains detailed instructions on how to use the tool, its features, and configuration options.
+- **ai_integration.py**: Handles integration with AI services for generating documentation summaries.
+- **codesmelt.py**: The main executable script responsible for concatenating source code files.
+- **extensions.py**: Defines configurations for file extensions and ignore patterns.
+- **output.txt**: The default output file where the concatenated source code is written.
+- **output.summary.md**: The output file for AI-generated documentation summaries.
+- **pyproject.toml**: Contains project metadata and dependencies.
+- **requirements.txt**: Lists the required Python packages for the project.
+- **assets/**: A directory containing project assets like the logo.
 
 ---
 
 ## Key Features
 
-- **Concatenation with Context**: Combines multiple source files into a single file while preserving directory structure.
-- **Smart Filtering**: Utilizes file extension whitelists and ignore patterns, respecting `.gitignore` rules.
-- **Encoding Handling**: Manages file encoding, defaulting to UTF-8, with a fallback to Latin-1.
-- **Debug Logging**: Provides detailed logging to understand file inclusion/exclusion.
-- **Customizable Output**: Options to tweak directory structure inclusion and file extension filtering.
-- **AI Summary**: Can generate documentation summaries using AI, provided the necessary API keys are set.
+- **Concatenation with Context**: Combines multiple source files into a single file while preserving the directory structure. This provides a clear layout of the project in the output file.
+- **Smart Filtering**: Utilizes file extension whitelists and ignore patterns to intelligently select files. It also respects `.gitignore` rules for additional filtering.
+- **Encoding Handling**: Manages file encoding, defaulting to UTF-8, with a fallback to Latin-1 to ensure all files can be read.
+- **Debug Logging**: Offers detailed logging to help users understand which files are included or excluded from the concatenation process.
+- **Customizable Output**: Allows users to tweak the output by omitting the directory structure or disabling file extension filtering.
+- **AI Documentation Summary**: Optionally generates a documentation summary using AI, provided the necessary API keys are set.
 
 ---
 
 ## Core Classes
 
-### `CodeSmelt`
+### `CodeSmelt` (from `codesmelt.py`)
 
-A class responsible for handling the concatenation process. Key responsibilities include:
-- Managing project path and output file setup.
-- Filtering files based on extensions and ignore patterns.
-- Reading file contents with encoding management.
-- Generating directory-like structure within the concatenated output.
-- Optionally generating an AI-based summary of the concatenated source code.
+The `CodeSmelt` class is the core component of the tool and is responsible for the concatenation process. Its key responsibilities include:
+
+- **Project Path and Output Setup**: Manages the project directory path and the output file setup.
+- **File Filtering**: Determines which files should be included based on extensions, ignore patterns, and `.gitignore` rules.
+- **File Reading**: Reads file contents with proper encoding handling, attempting UTF-8 first and falling back to Latin-1 if needed.
+- **Directory Structure Generation**: Recursively traverses directories to generate a tree-like structure within the output file.
+- **AI Summary Generation**: Optionally generates an AI-based summary of the concatenated source code if the `-s` flag is used.
+
+### `OpenAI` (from `ai_integration.py`)
+
+The `OpenAI` class is used to interface with AI services for generating documentation summaries. It provides methods to:
+
+- **Initialize AI Client**: Sets up the client using environment variables for API keys.
+- **Generate Summary**: Sends the concatenated source code to the AI service to generate a comprehensive documentation summary.
 
 ---
 
 ## Notable Algorithms and Patterns
 
-- **File Filtering**: Uses a combination of file extension checks, ignore patterns, and `.gitignore` parsing for intelligent file selection.
-- **Directory Structure Generation**: Recursively traverses directories to build a tree-like structure within the output.
-- **Encoding Strategy**: Attempts to read files with UTF-8 encoding and falls back to Latin-1 if necessary.
+- **File Filtering Algorithm**: Employs a multi-level filtering approach using file extension checks, predefined ignore patterns, and `.gitignore` parsing. This ensures that only relevant files are included in the output.
+- **Directory Structure Generation**: Utilizes a recursive algorithm to traverse the project directory and build a tree-like structure within the output file, which helps in visualizing the project layout.
+- **Encoding Strategy**: Implements a strategy pattern for reading files, trying UTF-8 encoding first and falling back to Latin-1 if necessary, ensuring robust file handling.
 
 ---
 
-## Installation
+## Dependencies and Requirements
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/codesmelt.git
-   cd codesmelt
-   ```
+### Python Version
 
-2. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+- **Python 3.11 or higher** is required to run CodeSmelt.
 
-3. **Ensure Required Files**:
-   Ensure all key files listed in the project structure are present.
+### Dependencies
 
----
+The following Python packages are required and can be installed using the `requirements.txt` file:
 
-## Usage
+- **gitignore-parser**: Version 0.1.11 or higher for parsing `.gitignore` files.
+- **openai**: For integration with OpenAI's AI services to generate documentation summaries.
 
-### Basic Usage
+To install these dependencies, run:
 
-To concatenate project source files, run:
 ```bash
-python codesmelt.py /path/to/project
+pip install -r requirements.txt
 ```
 
-### Advanced Options
+### Optional Dependencies
 
-- **Custom Output File**:
-  ```bash
-  python codesmelt.py -o output.txt /path/to/project
-  ```
+- **xAI**: For using xAI's API instead of OpenAI's, which requires setting the `XAI_API_KEY` environment variable.
 
-- **Enable Debug Logging**:
-  ```bash
-  python codesmelt.py -d /path/to/project
-  ```
+### Environment Variables
 
-- **Exclude Directory Structure**:
-  ```bash
-  python codesmelt.py -n /path/to/project
-  ```
+For AI integration, the following environment variables need to be set:
 
-- **Include All Files (Disable Filtering)**:
-  ```bash
-  python codesmelt.py -e /path/to/project
-  ```
-
-- **Generate AI Documentation Summary**:
-  ```bash
-  python codesmelt.py -s /path/to/project
-  ```
-
-### Command-line Arguments
-
-- `project_path` (required): Directory path of the Git project.
-- `-o, --output`: Output file path.
-- `-d, --debug`: Enable detailed debug logging.
-- `-n, --no-structure`: Exclude directory structure from output.
-- `-e, --no-extensions`: Include all files, bypassing extension filtering.
-- `-s, --summary`: Generate an AI summary if API keys are provided.
-
----
-
-## Configuration
-
-### Source File Extensions
-
-Defined in `extensions.py`, this set determines which files are included based on their extensions. Customize by editing `SOURCE_EXTENSIONS`.
-
-### Ignore Patterns
-
-`IGNORE_PATTERNS` in `extensions.py` specifies files/directories to exclude. The tool also respects `.gitignore` files for additional filtering.
-
----
-
-## Tips for Using with LLMs
-
-- **Token Management**: Limit concatenation to essential directories for large projects.
-- **Effective Prompting**: Use directory structure references for clarity.
-- **Review Output**: Ensure the concatenated file meets your needs before LLM submission.
-
----
-
-## Troubleshooting
-
-- **Files Not Found**: Validate project path and file extensions. Use `--debug` for insights.
-- **Dependencies Missing**: Run `pip install -r requirements.txt`.
-- **Permission Issues**: Verify read/write permissions for involved directories and files.
-
----
-
-## Contributing
-
-Contributions are welcome! Fork the repository and submit pull requests for improvements, bug fixes, or new features. Discuss major changes via issues first.
-
----
-
-## License
-
-Licensed under the [MIT License](LICENSE).
-
----
-
-## Author
-
-**Shiraz Akmal**
-
-Contact via [Twitter](https://x.com/ShirazAkmal) for questions or feedback.
-
-Happy coding with CodeSmelt!
-```
+- `OPENAI_API_KEY`: Required for using OpenAI's API.
+- `XAI_API_KEY`: Required for using xAI's API.
 
 # File: extensions.py
 ================================================================================
@@ -545,112 +241,6 @@ IGNORE_PATTERNS = {
     '*.exe', '*.dll', '*.so', '*.dylib'
 }
 
-
-# File: ai_integration.py
-================================================================================
-
-"""
-AI integration module for CodeSmelt
-Supports both OpenAI and xAI APIs for generating code documentation
-
-Author: Shiraz Akmal & AI
-
-"""
-
-import os
-from typing import Optional
-from openai import OpenAI
-
-def get_ai_client(provider: str = "openai") -> Optional[OpenAI]:
-    """Initialize AI client based on available API keys"""
-    try:
-        if provider == "xai":
-            api_key = os.getenv("XAI_API_KEY")
-            if api_key:
-                return OpenAI(
-                    api_key=api_key,
-                    base_url="https://api.x.ai/v1"
-                )
-        else:  # openai
-            api_key = os.getenv("OPENAI_API_KEY")
-            if api_key:
-                return OpenAI(api_key=api_key)
-        return None
-    except Exception as e:
-        print(f"Warning: Failed to initialize {provider} client: {e}")
-        return None
-
-def generate_summary(content: str, provider: str = "openai", custom_model: Optional[str] = None) -> Optional[str]:
-    """Generate documentation summary using AI"""
-    client = get_ai_client(provider)
-    if not client:
-        return None
-
-    try:
-        # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
-        # do not change this unless explicitly requested by the user
-        prompt = """
-        Please analyze the following source code and generate a comprehensive README-style documentation.
-        Focus on:
-        1. Project structure and organization
-        2. Key functionality and features
-        3. Important classes and their purposes
-        4. Notable algorithms or patterns used
-        5. Dependencies and requirements
-
-        Respond in markdown format.
-
-        Source code:
-
-        {content}
-        """.format(content=content)
-
-        # Use custom model if provided, otherwise use defaults
-        if custom_model:
-            model = custom_model
-        elif provider == "xai":
-            model = "grok-2-1212"
-        else:
-            model = "gpt-4o"
-
-        print(f"Using AI model: {model}")  # Debug info for user
-
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": "You are an expert code analyst specializing in generating clear, comprehensive documentation."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=2000,
-            response_format={"type": "text"}
-        )
-
-        return response.choices[0].message.content
-
-    except Exception as e:
-        print(f"Warning: Failed to generate summary using {provider} with model {model}: {e}")
-        # Try the alternative provider if the first one fails and no custom model was specified
-        if provider == "openai" and not custom_model:
-            print("Trying xAI as fallback...")
-            return generate_summary(content, provider="xai")
-        return None
-
-def try_all_providers(content: str, custom_model: Optional[str] = None) -> Optional[str]:
-    """Try all available AI providers and return the first successful result"""
-    # If custom model is specified, determine the provider based on the model name
-    if custom_model:
-        if custom_model.startswith("grok"):
-            return generate_summary(content, provider="xai", custom_model=custom_model)
-        else:
-            return generate_summary(content, provider="openai", custom_model=custom_model)
-
-    # Try OpenAI first, then fall back to xAI if no custom model specified
-    for provider in ["openai", "xai"]:
-        summary = generate_summary(content, provider)
-        if summary:
-            return summary
-    return None
 
 # File: codesmelt.py
 ================================================================================
@@ -918,3 +508,300 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# File: README.md
+================================================================================
+
+git clone https://github.com/yourusername/codesmelt.git
+   cd codesmelt
+   ```
+
+2. **Install Dependencies:**
+
+   CodeSmelt requires Python 3. Install all required packages using the `requirements.txt` file:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   *(If you use a virtual environment, activate it before installing.)*
+
+3. **Ensure File Structure:**
+
+   Make sure the following files are in the same directory:
+
+   - `codesmelt.py`
+   - `extensions.py`
+   - `README.md`
+   - `requirements.txt`
+   - `assets/CodeSmeltLogo.jpg` (logo image)
+
+---
+
+## Usage
+
+### Basic Usage
+
+Run CodeSmelt by providing the path to your Git project. For example:
+
+```bash
+python codesmelt.py /path/to/project
+```
+
+### Custom Output & Debug Mode
+
+- **Specify a Custom Output File:**
+
+  ```bash
+  python codesmelt.py -o output.txt /path/to/project
+  ```
+
+- **Enable Debug Logging:**
+
+  ```bash
+  python codesmelt.py -d -o output.txt /path/to/project
+  ```
+
+- **Omit the Directory Structure from the Output:**
+
+  ```bash
+  python codesmelt.py -n /path/to/project
+  ```
+
+- **Disable File Extension Filtering (Include All Files):**
+
+  ```bash
+  python codesmelt.py -e /path/to/project
+  ```
+
+### AI Summary Generation
+
+- **Generate Basic Documentation Summary:**
+
+  Uses the default AI model to generate documentation:
+  ```bash
+  python codesmelt.py -s /path/to/project
+  ```
+
+- **Use Custom AI Model:**
+
+  Choose specific models for summary generation:
+  ```bash
+  # Using OpenAI models
+  python codesmelt.py -s -m gpt-4 /path/to/project
+  python codesmelt.py -s -m gpt-3.5-turbo /path/to/project
+
+  # Using xAI models
+  python codesmelt.py -s -m grok-2-1212 /path/to/project
+  python codesmelt.py -s -m grok-2-vision-1212 /path/to/project
+  ```
+
+  Note: Each model has different capabilities and token limits:
+  - OpenAI GPT-4: 8K tokens
+  - OpenAI GPT-3.5: 4K tokens
+  - xAI Grok-2: 130K tokens
+  - xAI Grok-2-Vision: 8K tokens
+
+#### Command-line Arguments
+
+- `project_path` (required): Path to your Git project directory.
+- `-o, --output`: Specify the output file path (default: `concatenated_source.txt`).
+- `-d, --debug`: Enable debug logging to get detailed information about file selection.
+- `-n, --no-structure`: Omit the directory structure from the output file.
+- `-e, --no-extensions`: Disable file extension filtering (include all files regardless of extension).
+- `-s, --summary`: Generate AI documentation summary (requires OpenAI or xAI API key).
+- `-m, --model`: Specify custom AI model for summary generation (e.g., 'gpt-4', 'gpt-3.5-turbo' for OpenAI or 'grok-2-1212', 'grok-2-vision-1212' for xAI).
+
+---
+
+## Configuration
+
+CodeSmelt uses the `extensions.py` file to define:
+
+### Source File Extensions
+
+The tool automatically includes many common source code file extensions. Examples include:
+
+- **Web:** `.js`, `.ts`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.html`, `.css`, etc.
+- **Python:** `.py`, `.pyi`, `.pyx`
+- **Java/Kotlin:** `.java`, `.kt`, `.groovy`
+- **C-family:** `.c`, `.cpp`, `.h`, `.hpp`
+- **Other Languages:** Ruby (`.rb`), PHP (`.php`), Go (`.go`), Rust (`.rs`), Swift (`.swift`), Shell (`.sh`), and more.
+
+*To add or remove extensions, edit the `SOURCE_EXTENSIONS` set in `extensions.py`.*
+
+### Ignore Patterns
+
+Files and directories are automatically ignored based on three levels:
+
+1. **Built-in Patterns:** Defined in the `IGNORE_PATTERNS` set in `extensions.py` (e.g., build outputs, dependency directories, IDE files, binary/media files).
+2. **Project's `.gitignore`:** If a `.gitignore` is present at the root of your project, CodeSmelt honors its rules.
+3. **Directory-specific Rules:** Additional `.gitignore` files in subdirectories will also be considered.
+
+*To customize, modify the `IGNORE_PATTERNS` in `extensions.py`.*
+
+---
+
+## Tips for Using with LLMs
+
+1. **Token Management:**
+   - For very large projects, consider concatenating only specific directories to avoid token limits.
+   - Use debug mode (`-d`) to verify which files are included/excluded.
+   - Choose appropriate AI models based on your project size (xAI models support larger contexts).
+
+2. **Effective Prompting:**
+   - Reference files using their relative paths as shown in the generated directory structure.
+   - Ask questions about specific sections of the output using the file headers.
+
+3. **Best Practices:**
+   - Always review the concatenated output before sending it to an LLM.
+   - For large projects, consider breaking down the analysis into smaller, manageable components.
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+1. **No Files Found:**
+   - Double-check the project path.
+   - Ensure your project contains files with supported extensions (unless using `-e` to disable filtering).
+   - Run with `--debug` to see detailed file filtering information.
+
+2. **Missing Dependencies:**
+   - Make sure you have installed all required packages by running:
+
+     ```bash
+     pip install -r requirements.txt
+
+# File: ai_integration.py
+================================================================================
+
+"""
+AI integration module for CodeSmelt
+Supports both OpenAI and xAI APIs for generating code documentation
+
+Author: Shiraz Akmal & AI
+
+"""
+
+import os
+from typing import Optional
+from openai import OpenAI
+
+def get_ai_client(provider: str = "openai") -> Optional[OpenAI]:
+    """Initialize AI client based on available API keys"""
+    try:
+        if provider == "xai":
+            api_key = os.getenv("XAI_API_KEY")
+            if api_key:
+                return OpenAI(
+                    api_key=api_key,
+                    base_url="https://api.x.ai/v1"
+                )
+        else:  # openai
+            api_key = os.getenv("OPENAI_API_KEY")
+            if api_key:
+                return OpenAI(api_key=api_key)
+        return None
+    except Exception as e:
+        print(f"Warning: Failed to initialize {provider} client: {e}")
+        return None
+
+def generate_summary(content: str, provider: str = "openai", custom_model: Optional[str] = None) -> Optional[str]:
+    """Generate documentation summary using AI"""
+    client = get_ai_client(provider)
+    if not client:
+        print(f"Warning: Could not initialize {provider} client. Check API key.")
+        return None
+
+    try:
+        # Limit content size based on model
+        max_tokens = 4000  # Default for most models
+        if custom_model:
+            if custom_model.startswith("grok"):
+                max_tokens = 130000  # xAI models have larger context
+            elif custom_model in ["gpt-4", "gpt-4o"]:
+                max_tokens = 7000  # Leave room for response
+            print(f"Debug: Using token limit of {max_tokens} for model {custom_model}")
+
+        content_preview = content[:max_tokens * 4]  # Approximate token count (4 chars per token)
+        print(f"Debug: Content preview length: {len(content_preview)} characters")
+
+        prompt = """
+        Please analyze the following source code and generate a comprehensive README-style documentation.
+        Focus on:
+        1. Project structure and organization
+        2. Key functionality and features
+        3. Important classes and their purposes
+        4. Notable algorithms or patterns used
+        5. Dependencies and requirements
+
+        Respond in markdown format.
+
+        Source code:
+
+        {content}
+        """.format(content=content_preview)
+
+        # Use custom model if provided, otherwise use defaults
+        if custom_model:
+            model = custom_model
+        elif provider == "xai":
+            model = "grok-2-1212"
+        else:
+            model = "gpt-4o"
+
+        print(f"Using AI model: {model}")  # Debug info for user
+
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are an expert code analyst specializing in generating clear, comprehensive documentation."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=2000,
+            response_format={"type": "text"}
+        )
+
+        return response.choices[0].message.content
+
+    except Exception as e:
+        print(f"Warning: Failed to generate summary using {provider} with model {model}: {e}")
+        # Try the alternative provider if the first one fails and no custom model was specified
+        if provider == "openai" and not custom_model:
+            print("Trying xAI as fallback...")
+            return generate_summary(content, provider="xai")
+        return None
+
+def try_all_providers(content: str, custom_model: Optional[str] = None) -> Optional[str]:
+    """Try all available AI providers and return the first successful result"""
+    # If custom model is specified, determine the provider based on the model name
+    if custom_model:
+        if custom_model.startswith("grok"):
+            if not os.getenv("XAI_API_KEY"):
+                print("Warning: XAI_API_KEY environment variable is not set. "
+                      "Required for using Grok models.")
+                return None
+            return generate_summary(content, provider="xai", custom_model=custom_model)
+        else:
+            if not os.getenv("OPENAI_API_KEY"):
+                print("Warning: OPENAI_API_KEY environment variable is not set. "
+                      "Required for using OpenAI models.")
+                return None
+            return generate_summary(content, provider="openai", custom_model=custom_model)
+
+    # Try OpenAI first, then fall back to xAI if no custom model specified
+    for provider in ["openai", "xai"]:
+        if provider == "openai" and not os.getenv("OPENAI_API_KEY"):
+            print("Warning: OPENAI_API_KEY not found, trying xAI...")
+            continue
+        if provider == "xai" and not os.getenv("XAI_API_KEY"):
+            print("Warning: XAI_API_KEY not found, no more providers to try.")
+            return None
+        print(f"Attempting to generate summary using {provider}...")
+        summary = generate_summary(content, provider)
+        if summary:
+            return summary
+    return None

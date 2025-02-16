@@ -33,11 +33,22 @@ def generate_summary(content: str, provider: str = "openai", custom_model: Optio
     """Generate documentation summary using AI"""
     client = get_ai_client(provider)
     if not client:
+        print(f"Warning: Could not initialize {provider} client. Check API key.")
         return None
 
     try:
-        # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
-        # do not change this unless explicitly requested by the user
+        # Limit content size based on model
+        max_tokens = 4000  # Default for most models
+        if custom_model:
+            if custom_model.startswith("grok"):
+                max_tokens = 130000  # xAI models have larger context
+            elif custom_model in ["gpt-4", "gpt-4o"]:
+                max_tokens = 7000  # Leave room for response
+            print(f"Debug: Using token limit of {max_tokens} for model {custom_model}")
+
+        content_preview = content[:max_tokens * 4]  # Approximate token count (4 chars per token)
+        print(f"Debug: Content preview length: {len(content_preview)} characters")
+
         prompt = """
         Please analyze the following source code and generate a comprehensive README-style documentation.
         Focus on:
@@ -52,7 +63,7 @@ def generate_summary(content: str, provider: str = "openai", custom_model: Optio
         Source code:
 
         {content}
-        """.format(content=content)
+        """.format(content=content_preview)
 
         # Use custom model if provided, otherwise use defaults
         if custom_model:
@@ -90,12 +101,27 @@ def try_all_providers(content: str, custom_model: Optional[str] = None) -> Optio
     # If custom model is specified, determine the provider based on the model name
     if custom_model:
         if custom_model.startswith("grok"):
+            if not os.getenv("XAI_API_KEY"):
+                print("Warning: XAI_API_KEY environment variable is not set. "
+                      "Required for using Grok models.")
+                return None
             return generate_summary(content, provider="xai", custom_model=custom_model)
         else:
+            if not os.getenv("OPENAI_API_KEY"):
+                print("Warning: OPENAI_API_KEY environment variable is not set. "
+                      "Required for using OpenAI models.")
+                return None
             return generate_summary(content, provider="openai", custom_model=custom_model)
 
     # Try OpenAI first, then fall back to xAI if no custom model specified
     for provider in ["openai", "xai"]:
+        if provider == "openai" and not os.getenv("OPENAI_API_KEY"):
+            print("Warning: OPENAI_API_KEY not found, trying xAI...")
+            continue
+        if provider == "xai" and not os.getenv("XAI_API_KEY"):
+            print("Warning: XAI_API_KEY not found, no more providers to try.")
+            return None
+        print(f"Attempting to generate summary using {provider}...")
         summary = generate_summary(content, provider)
         if summary:
             return summary

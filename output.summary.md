@@ -1,11 +1,4 @@
-```markdown
-# CodeSmelt: Source Code Concatenator
-
-![CodeSmelt Logo](assets/CodeSmeltLogo.jpg)
-
-**CodeSmelt** is a command-line tool designed to simplify the analysis and sharing of Git projects by concatenating source code files into a single file. This tool preserves the directory structure within the output, providing a comprehensive view of the project layout. It is particularly useful for code analysis, input preparation for language models, and sharing project snapshots.
-
----
+# CodeSmelt README
 
 ## Table of Contents
 
@@ -13,24 +6,20 @@
 - [Key Features](#key-features)
 - [Core Classes](#core-classes)
 - [Notable Algorithms and Patterns](#notable-algorithms-and-patterns)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Tips for Using with LLMs](#tips-for-using-with-llms)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
-- [Author](#author)
+- [Dependencies and Requirements](#dependencies-and-requirements)
 
 ---
 
 ## Project Structure
+
+The project structure is organized as follows:
 
 ```plaintext
 ├── README.md
 ├── ai_integration.py
 ├── codesmelt.py
 ├── extensions.py
+├── output.summary.md
 ├── output.txt
 ├── pyproject.toml
 ├── requirements.txt
@@ -40,156 +29,84 @@
 
 ### Description of Key Files
 
-- **codesmelt.py**: Main executable script for concatenating source code files.
-- **extensions.py**: Contains configuration for file extensions and ignore patterns.
-- **requirements.txt**: Lists required dependencies.
-- **pyproject.toml**: Project metadata and dependencies declaration.
-- **assets/**: Directory containing project assets like the logo.
+- **README.md**: Contains detailed instructions on how to use the tool, its features, and configuration options.
+- **ai_integration.py**: Handles integration with AI services for generating documentation summaries.
+- **codesmelt.py**: The main executable script responsible for concatenating source code files.
+- **extensions.py**: Defines configurations for file extensions and ignore patterns.
+- **output.txt**: The default output file where the concatenated source code is written.
+- **output.summary.md**: The output file for AI-generated documentation summaries.
+- **pyproject.toml**: Contains project metadata and dependencies.
+- **requirements.txt**: Lists the required Python packages for the project.
+- **assets/**: A directory containing project assets like the logo.
 
 ---
 
 ## Key Features
 
-- **Concatenation with Context**: Combines multiple source files into a single file while preserving directory structure.
-- **Smart Filtering**: Utilizes file extension whitelists and ignore patterns, respecting `.gitignore` rules.
-- **Encoding Handling**: Manages file encoding, defaulting to UTF-8, with a fallback to Latin-1.
-- **Debug Logging**: Provides detailed logging to understand file inclusion/exclusion.
-- **Customizable Output**: Options to tweak directory structure inclusion and file extension filtering.
-- **AI Summary**: Can generate documentation summaries using AI, provided the necessary API keys are set.
+- **Concatenation with Context**: Combines multiple source files into a single file while preserving the directory structure. This provides a clear layout of the project in the output file.
+- **Smart Filtering**: Utilizes file extension whitelists and ignore patterns to intelligently select files. It also respects `.gitignore` rules for additional filtering.
+- **Encoding Handling**: Manages file encoding, defaulting to UTF-8, with a fallback to Latin-1 to ensure all files can be read.
+- **Debug Logging**: Offers detailed logging to help users understand which files are included or excluded from the concatenation process.
+- **Customizable Output**: Allows users to tweak the output by omitting the directory structure or disabling file extension filtering.
+- **AI Documentation Summary**: Optionally generates a documentation summary using AI, provided the necessary API keys are set.
 
 ---
 
 ## Core Classes
 
-### `CodeSmelt`
+### `CodeSmelt` (from `codesmelt.py`)
 
-A class responsible for handling the concatenation process. Key responsibilities include:
-- Managing project path and output file setup.
-- Filtering files based on extensions and ignore patterns.
-- Reading file contents with encoding management.
-- Generating directory-like structure within the concatenated output.
-- Optionally generating an AI-based summary of the concatenated source code.
+The `CodeSmelt` class is the core component of the tool and is responsible for the concatenation process. Its key responsibilities include:
+
+- **Project Path and Output Setup**: Manages the project directory path and the output file setup.
+- **File Filtering**: Determines which files should be included based on extensions, ignore patterns, and `.gitignore` rules.
+- **File Reading**: Reads file contents with proper encoding handling, attempting UTF-8 first and falling back to Latin-1 if needed.
+- **Directory Structure Generation**: Recursively traverses directories to generate a tree-like structure within the output file.
+- **AI Summary Generation**: Optionally generates an AI-based summary of the concatenated source code if the `-s` flag is used.
+
+### `OpenAI` (from `ai_integration.py`)
+
+The `OpenAI` class is used to interface with AI services for generating documentation summaries. It provides methods to:
+
+- **Initialize AI Client**: Sets up the client using environment variables for API keys.
+- **Generate Summary**: Sends the concatenated source code to the AI service to generate a comprehensive documentation summary.
 
 ---
 
 ## Notable Algorithms and Patterns
 
-- **File Filtering**: Uses a combination of file extension checks, ignore patterns, and `.gitignore` parsing for intelligent file selection.
-- **Directory Structure Generation**: Recursively traverses directories to build a tree-like structure within the output.
-- **Encoding Strategy**: Attempts to read files with UTF-8 encoding and falls back to Latin-1 if necessary.
+- **File Filtering Algorithm**: Employs a multi-level filtering approach using file extension checks, predefined ignore patterns, and `.gitignore` parsing. This ensures that only relevant files are included in the output.
+- **Directory Structure Generation**: Utilizes a recursive algorithm to traverse the project directory and build a tree-like structure within the output file, which helps in visualizing the project layout.
+- **Encoding Strategy**: Implements a strategy pattern for reading files, trying UTF-8 encoding first and falling back to Latin-1 if necessary, ensuring robust file handling.
 
 ---
 
-## Installation
+## Dependencies and Requirements
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/codesmelt.git
-   cd codesmelt
-   ```
+### Python Version
 
-2. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+- **Python 3.11 or higher** is required to run CodeSmelt.
 
-3. **Ensure Required Files**:
-   Ensure all key files listed in the project structure are present.
+### Dependencies
 
----
+The following Python packages are required and can be installed using the `requirements.txt` file:
 
-## Usage
+- **gitignore-parser**: Version 0.1.11 or higher for parsing `.gitignore` files.
+- **openai**: For integration with OpenAI's AI services to generate documentation summaries.
 
-### Basic Usage
+To install these dependencies, run:
 
-To concatenate project source files, run:
 ```bash
-python codesmelt.py /path/to/project
+pip install -r requirements.txt
 ```
 
-### Advanced Options
+### Optional Dependencies
 
-- **Custom Output File**:
-  ```bash
-  python codesmelt.py -o output.txt /path/to/project
-  ```
+- **xAI**: For using xAI's API instead of OpenAI's, which requires setting the `XAI_API_KEY` environment variable.
 
-- **Enable Debug Logging**:
-  ```bash
-  python codesmelt.py -d /path/to/project
-  ```
+### Environment Variables
 
-- **Exclude Directory Structure**:
-  ```bash
-  python codesmelt.py -n /path/to/project
-  ```
+For AI integration, the following environment variables need to be set:
 
-- **Include All Files (Disable Filtering)**:
-  ```bash
-  python codesmelt.py -e /path/to/project
-  ```
-
-- **Generate AI Documentation Summary**:
-  ```bash
-  python codesmelt.py -s /path/to/project
-  ```
-
-### Command-line Arguments
-
-- `project_path` (required): Directory path of the Git project.
-- `-o, --output`: Output file path.
-- `-d, --debug`: Enable detailed debug logging.
-- `-n, --no-structure`: Exclude directory structure from output.
-- `-e, --no-extensions`: Include all files, bypassing extension filtering.
-- `-s, --summary`: Generate an AI summary if API keys are provided.
-
----
-
-## Configuration
-
-### Source File Extensions
-
-Defined in `extensions.py`, this set determines which files are included based on their extensions. Customize by editing `SOURCE_EXTENSIONS`.
-
-### Ignore Patterns
-
-`IGNORE_PATTERNS` in `extensions.py` specifies files/directories to exclude. The tool also respects `.gitignore` files for additional filtering.
-
----
-
-## Tips for Using with LLMs
-
-- **Token Management**: Limit concatenation to essential directories for large projects.
-- **Effective Prompting**: Use directory structure references for clarity.
-- **Review Output**: Ensure the concatenated file meets your needs before LLM submission.
-
----
-
-## Troubleshooting
-
-- **Files Not Found**: Validate project path and file extensions. Use `--debug` for insights.
-- **Dependencies Missing**: Run `pip install -r requirements.txt`.
-- **Permission Issues**: Verify read/write permissions for involved directories and files.
-
----
-
-## Contributing
-
-Contributions are welcome! Fork the repository and submit pull requests for improvements, bug fixes, or new features. Discuss major changes via issues first.
-
----
-
-## License
-
-Licensed under the [MIT License](LICENSE).
-
----
-
-## Author
-
-**Shiraz Akmal**
-
-Contact via [Twitter](https://x.com/ShirazAkmal) for questions or feedback.
-
-Happy coding with CodeSmelt!
-```
+- `OPENAI_API_KEY`: Required for using OpenAI's API.
+- `XAI_API_KEY`: Required for using xAI's API.
