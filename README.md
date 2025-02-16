@@ -201,7 +201,7 @@ Contributions are welcome! If you have ideas for improvements, bug fixes, or add
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE). *(Replace with your actual license if different.)*
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
