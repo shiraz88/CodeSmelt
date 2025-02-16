@@ -183,9 +183,9 @@ class CodeSmelt:
                             f.write(summary)
                         print(f"Generated AI summary: {summary_path}")
                     else:
-                        print("Warning: Could not generate AI summary. "
-                              "Make sure either OPENAI_API_KEY or XAI_API_KEY "
-                              "environment variable is set.")
+                        # This message appears if no summary was generated but process completed
+                        print("Notice: Could not generate AI summary. "
+                              "This could be due to token limits or missing API keys.")
 
                 return True
 

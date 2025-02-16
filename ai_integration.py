@@ -8,7 +8,7 @@ Author: Shiraz Akmal & AI
 
 import os
 from typing import Optional
-from openai import OpenAI
+from openai import OpenAI, OpenAIError, BadRequestError
 
 def get_ai_client(provider: str = "openai") -> Optional[OpenAI]:
     """Initialize AI client based on available API keys"""
@@ -33,7 +33,7 @@ def generate_summary(content: str, provider: str = "openai", custom_model: Optio
     """Generate documentation summary using AI"""
     client = get_ai_client(provider)
     if not client:
-        print(f"Warning: Could not initialize {provider} client. Check API key.")
+        print(f"Notice: Could not initialize {provider} client. Skipping summary generation.")
         return None
 
     try:
@@ -46,7 +46,8 @@ def generate_summary(content: str, provider: str = "openai", custom_model: Optio
                 max_tokens = 7000  # Leave room for response
             print(f"Debug: Using token limit of {max_tokens} for model {custom_model}")
 
-        content_preview = content[:max_tokens * 4]  # Approximate token count (4 chars per token)
+        # More conservative token estimation (3 chars per token instead of 4)
+        content_preview = content[:max_tokens * 3]  # Approximate token count
         print(f"Debug: Content preview length: {len(content_preview)} characters")
 
         prompt = """
@@ -88,8 +89,18 @@ def generate_summary(content: str, provider: str = "openai", custom_model: Optio
 
         return response.choices[0].message.content
 
+    except BadRequestError as e:
+        # Handle specific OpenAI errors (like token limits) gracefully
+        print(f"Notice: {provider} API request failed - {str(e)}")
+        if "context_length_exceeded" in str(e):
+            print("The content is too long for this model's context window. Try using a model with larger context (e.g., grok-2-1212)")
+        return None
+    except OpenAIError as e:
+        # Handle other OpenAI-specific errors
+        print(f"Notice: {provider} API error occurred - {str(e)}")
+        return None
     except Exception as e:
-        print(f"Warning: Failed to generate summary using {provider} with model {model}: {e}")
+        print(f"Notice: Failed to generate summary using {provider} with model {model}: {e}")
         # Try the alternative provider if the first one fails and no custom model was specified
         if provider == "openai" and not custom_model:
             print("Trying xAI as fallback...")
@@ -102,13 +113,13 @@ def try_all_providers(content: str, custom_model: Optional[str] = None) -> Optio
     if custom_model:
         if custom_model.startswith("grok"):
             if not os.getenv("XAI_API_KEY"):
-                print("Warning: XAI_API_KEY environment variable is not set. "
+                print("Notice: XAI_API_KEY environment variable is not set. "
                       "Required for using Grok models.")
                 return None
             return generate_summary(content, provider="xai", custom_model=custom_model)
         else:
             if not os.getenv("OPENAI_API_KEY"):
-                print("Warning: OPENAI_API_KEY environment variable is not set. "
+                print("Notice: OPENAI_API_KEY environment variable is not set. "
                       "Required for using OpenAI models.")
                 return None
             return generate_summary(content, provider="openai", custom_model=custom_model)
@@ -116,10 +127,10 @@ def try_all_providers(content: str, custom_model: Optional[str] = None) -> Optio
     # Try OpenAI first, then fall back to xAI if no custom model specified
     for provider in ["openai", "xai"]:
         if provider == "openai" and not os.getenv("OPENAI_API_KEY"):
-            print("Warning: OPENAI_API_KEY not found, trying xAI...")
+            print("Notice: OPENAI_API_KEY not found, trying xAI...")
             continue
         if provider == "xai" and not os.getenv("XAI_API_KEY"):
-            print("Warning: XAI_API_KEY not found, no more providers to try.")
+            print("Notice: XAI_API_KEY not found, no more providers to try.")
             return None
         print(f"Attempting to generate summary using {provider}...")
         summary = generate_summary(content, provider)

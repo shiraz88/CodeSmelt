@@ -1,5 +1,2 @@
 gitignore_parser==0.1.11
 openai
-openai
-openai
-openai
